@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import "../App.css";
 
 function MusicPlayer() {
@@ -8,6 +8,9 @@ function MusicPlayer() {
   const [likedSongs, setLikedSongs] = useState([]);
   const [selectedGenre, setSelectedGenre] = useState("All");
 
+  const audioRef = useRef(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
   useEffect(() => {
     fetch("http://localhost:5000/songs")
       .then((res) => res.json())
@@ -15,9 +18,24 @@ function MusicPlayer() {
       .catch((err) => console.log(err));
   }, []);
 
-  // ▶ Play Song
+  // ▶ Play / Pause Song
   const playSong = (song) => {
+    // same song → toggle pause/play
+    if (currentSong?.id === song.id && audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause();
+        setIsPlaying(false);
+      } else {
+        audioRef.current.play();
+        setIsPlaying(true);
+      }
+
+      return;
+    }
+
+    // new song
     setCurrentSong(song);
+    setIsPlaying(true);
   };
 
   // ❤️ Like Song
@@ -41,6 +59,7 @@ function MusicPlayer() {
       currentSongIndex === songs.length - 1 ? 0 : currentSongIndex + 1;
 
     setCurrentSong(songs[nextIndex]);
+    setIsPlaying(true);
   };
 
   // ⏮ Previous Song
@@ -55,6 +74,7 @@ function MusicPlayer() {
       currentSongIndex === 0 ? songs.length - 1 : currentSongIndex - 1;
 
     setCurrentSong(songs[prevIndex]);
+    setIsPlaying(true);
   };
 
   // 🔍 Filter Songs
@@ -113,7 +133,9 @@ function MusicPlayer() {
               </span>
 
               <div>
-                <button onClick={() => playSong(song)}>▶</button>
+                <button onClick={() => playSong(song)}>
+                  {currentSong?.id === song.id && isPlaying ? "⏸" : "▶"}
+                </button>
 
                 <button onClick={() => toggleLike(song.id)}>
                   {likedSongs.includes(song.id) ? "❤️" : "🤍"}
@@ -140,9 +162,15 @@ function MusicPlayer() {
                     </span>
 
                     <div>
-                      <button onClick={() => playSong(song)}>▶</button>
+                      <button onClick={() => playSong(song)}>
+                        {currentSong?.id === song.id && isPlaying
+                          ? "⏸"
+                          : "▶"}
+                      </button>
 
-                      <button onClick={() => toggleLike(song.id)}>❤️</button>
+                      <button onClick={() => toggleLike(song.id)}>
+                        ❤️
+                      </button>
                     </div>
                   </li>
                 ))}
@@ -155,7 +183,18 @@ function MusicPlayer() {
           <div className="player">
             <h3>Now Playing: {currentSong.title}</h3>
 
-            <audio controls src={currentSong.url} autoPlay onEnded={nextSong} />
+            <audio
+              ref={audioRef}
+              controls
+              src={currentSong.url}
+              autoPlay
+              onPlay={() => setIsPlaying(true)}
+              onPause={() => setIsPlaying(false)}
+              onEnded={() => {
+                setIsPlaying(false);
+                nextSong();
+              }}
+            />
 
             <div className="controls">
               <button onClick={prevSong}>⏮</button>
