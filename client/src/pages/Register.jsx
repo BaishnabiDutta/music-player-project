@@ -1,25 +1,38 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
-function Login() {
+function Register() {
+
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const navigate = useNavigate();
+  const handleRegister = async (e) => {
 
-  const handleLogin = async (e) => {
     e.preventDefault();
 
-    // Temporary Login
-    if (email && password) {
-      alert("Login Successful");
-      navigate("/player");
-    } else {
-      alert("Please enter email and password");
+    try {
+
+      const res = await axios.post(
+        "http://localhost:5000/api/users/register",
+        {
+          name,
+          email,
+          password,
+        }
+      );
+
+      alert(res.data.message);
+
+    } catch (err) {
+
+      alert("Registration Failed");
+
     }
   };
 
   return (
+
     <div
       style={{
         height: "100vh",
@@ -29,6 +42,7 @@ function Login() {
         background: "#4b0000",
       }}
     >
+
       <div
         style={{
           background: "rgba(255,255,255,0.1)",
@@ -39,14 +53,18 @@ function Login() {
           backdropFilter: "blur(10px)",
         }}
       >
-        <h2 style={{ color: "white" }}>User Login</h2>
 
-        <form onSubmit={handleLogin}>
+        <h2 style={{ color: "white" }}>
+          Register
+        </h2>
+
+        <form onSubmit={handleRegister}>
+
           <input
-            type="email"
-            placeholder="Enter Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            type="text"
+            placeholder="Enter Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
             style={{
               width: "100%",
               padding: "10px",
@@ -56,8 +74,22 @@ function Login() {
             }}
           />
 
-          <br />
-          <br />
+          <br /><br />
+
+          <input
+            type="email"
+            placeholder="Enter Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            style={{
+              width: "100%",
+              padding: "10px",
+              borderRadius: "10px",
+              border: "none",
+            }}
+          />
+
+          <br /><br />
 
           <input
             type="password"
@@ -72,8 +104,7 @@ function Login() {
             }}
           />
 
-          <br />
-          <br />
+          <br /><br />
 
           <button
             type="submit"
@@ -88,12 +119,15 @@ function Login() {
               cursor: "pointer",
             }}
           >
-            Login
+            Register
           </button>
+
         </form>
+
       </div>
+
     </div>
   );
 }
 
-export default Login;
+export default Register;
