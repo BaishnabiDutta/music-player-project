@@ -25,7 +25,7 @@ function MusicPlayer() {
     setLikedSongs((prev) =>
       prev.includes(id)
         ? prev.filter((songId) => songId !== id)
-        : [...prev, id]
+        : [...prev, id],
     );
   };
 
@@ -34,13 +34,11 @@ function MusicPlayer() {
     if (!currentSong) return;
 
     const currentSongIndex = songs.findIndex(
-      (song) => song.id === currentSong.id
+      (song) => song.id === currentSong.id,
     );
 
     const nextIndex =
-      currentSongIndex === songs.length - 1
-        ? 0
-        : currentSongIndex + 1;
+      currentSongIndex === songs.length - 1 ? 0 : currentSongIndex + 1;
 
     setCurrentSong(songs[nextIndex]);
   };
@@ -50,13 +48,11 @@ function MusicPlayer() {
     if (!currentSong) return;
 
     const currentSongIndex = songs.findIndex(
-      (song) => song.id === currentSong.id
+      (song) => song.id === currentSong.id,
     );
 
     const prevIndex =
-      currentSongIndex === 0
-        ? songs.length - 1
-        : currentSongIndex - 1;
+      currentSongIndex === 0 ? songs.length - 1 : currentSongIndex - 1;
 
     setCurrentSong(songs[prevIndex]);
   };
@@ -90,25 +86,17 @@ function MusicPlayer() {
 
         {/* 🎼 Genre Buttons */}
         <div className="genres">
-          {[
-            "All",
-            "Pop",
-            "Hip-Hop",
-            "EDM",
-            "Lo-fi",
-            "K-Pop",
-            "R&B",
-          ].map((genre) => (
-            <button
-              key={genre}
-              className={
-                selectedGenre === genre ? "active-genre" : ""
-              }
-              onClick={() => setSelectedGenre(genre)}
-            >
-              {genre}
-            </button>
-          ))}
+          {["All", "Pop", "Hip-Hop", "EDM", "Lo-fi", "K-Pop", "R&B"].map(
+            (genre) => (
+              <button
+                key={genre}
+                className={selectedGenre === genre ? "active-genre" : ""}
+                onClick={() => setSelectedGenre(genre)}
+              >
+                {genre}
+              </button>
+            ),
+          )}
         </div>
 
         {/* 🎵 Song List */}
@@ -125,9 +113,7 @@ function MusicPlayer() {
               </span>
 
               <div>
-                <button onClick={() => playSong(song)}>
-                  ▶
-                </button>
+                <button onClick={() => playSong(song)}>▶</button>
 
                 <button onClick={() => toggleLike(song.id)}>
                   {likedSongs.includes(song.id) ? "❤️" : "🤍"}
@@ -137,17 +123,39 @@ function MusicPlayer() {
           ))}
         </ul>
 
+        {/* ❤️ Favorites Section */}
+        <div className="favorites-section">
+          <h2>❤️ Favorite Songs</h2>
+
+          {likedSongs.length === 0 ? (
+            <p>No favorite songs yet</p>
+          ) : (
+            <ul className="song-list">
+              {songs
+                .filter((song) => likedSongs.includes(song.id))
+                .map((song) => (
+                  <li key={song.id} className="song-item">
+                    <span>
+                      {song.title} - {song.artist}
+                    </span>
+
+                    <div>
+                      <button onClick={() => playSong(song)}>▶</button>
+
+                      <button onClick={() => toggleLike(song.id)}>❤️</button>
+                    </div>
+                  </li>
+                ))}
+            </ul>
+          )}
+        </div>
+
         {/* 🎧 Player */}
         {currentSong && (
           <div className="player">
             <h3>Now Playing: {currentSong.title}</h3>
 
-            <audio
-              controls
-              src={currentSong.url}
-              autoPlay
-              onEnded={nextSong}
-            />
+            <audio controls src={currentSong.url} autoPlay onEnded={nextSong} />
 
             <div className="controls">
               <button onClick={prevSong}>⏮</button>
@@ -156,9 +164,7 @@ function MusicPlayer() {
           </div>
         )}
 
-        <footer className="footer">
-          © 2026 Algorythm Music Player
-        </footer>
+        <footer className="footer">© 2026 Algorythm Music Player</footer>
       </div>
     </div>
   );
