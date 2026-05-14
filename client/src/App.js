@@ -3,9 +3,10 @@ import "./App.css";
 
 function App() {
   const [songs, setSongs] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(null);
+  const [currentSong, setCurrentSong] = useState(null);
   const [search, setSearch] = useState("");
   const [likedSongs, setLikedSongs] = useState([]);
+  const [selectedGenre, setSelectedGenre] = useState("All");
 
   useEffect(() => {
     fetch("http://localhost:5000/songs")
@@ -14,34 +15,63 @@ function App() {
       .catch((err) => console.log(err));
   }, []);
 
-  const playSong = (index) => {
-    setCurrentIndex(index);
+  // ▶ Play Song
+  const playSong = (song) => {
+    setCurrentSong(song);
   };
 
-  const nextSong = () => {
-    setCurrentIndex((prev) =>
-      prev === null || prev === songs.length - 1 ? 0 : prev + 1,
-    );
-  };
-
-  const prevSong = () => {
-    setCurrentIndex((prev) =>
-      prev === null || prev === 0 ? songs.length - 1 : prev - 1,
-    );
-  };
-
+  // ❤️ Like Song
   const toggleLike = (id) => {
     setLikedSongs((prev) =>
       prev.includes(id)
         ? prev.filter((songId) => songId !== id)
-        : [...prev, id],
+        : [...prev, id]
     );
   };
 
-  // 🔍 Filter songs
-  const filteredSongs = songs.filter((song) =>
-    song.title.toLowerCase().includes(search.toLowerCase()),
-  );
+  // ⏭ Next Song
+  const nextSong = () => {
+    if (!currentSong) return;
+
+    const currentSongIndex = songs.findIndex(
+      (song) => song.id === currentSong.id
+    );
+
+    const nextIndex =
+      currentSongIndex === songs.length - 1
+        ? 0
+        : currentSongIndex + 1;
+
+    setCurrentSong(songs[nextIndex]);
+  };
+
+  // ⏮ Previous Song
+  const prevSong = () => {
+    if (!currentSong) return;
+
+    const currentSongIndex = songs.findIndex(
+      (song) => song.id === currentSong.id
+    );
+
+    const prevIndex =
+      currentSongIndex === 0
+        ? songs.length - 1
+        : currentSongIndex - 1;
+
+    setCurrentSong(songs[prevIndex]);
+  };
+
+  // 🔍 Filter Songs
+  const filteredSongs = songs.filter((song) => {
+    const matchesSearch = song.title
+      .toLowerCase()
+      .includes(search.toLowerCase());
+
+    const matchesGenre =
+      selectedGenre === "All" || song.genre === selectedGenre;
+
+    return matchesSearch && matchesGenre;
+  });
 
   return (
     <div className="app">
@@ -58,13 +88,36 @@ function App() {
           className="search"
         />
 
+        {/* 🎼 Genre Buttons */}
+        <div className="genres">
+          {[
+            "All",
+            "Pop",
+            "Hip-Hop",
+            "EDM",
+            "Lo-fi",
+            "K-Pop",
+            "R&B",
+          ].map((genre) => (
+            <button
+              key={genre}
+              className={
+                selectedGenre === genre ? "active-genre" : ""
+              }
+              onClick={() => setSelectedGenre(genre)}
+            >
+              {genre}
+            </button>
+          ))}
+        </div>
+
         {/* 🎵 Song List */}
         <ul className="song-list">
-          {filteredSongs.map((song, index) => (
+          {filteredSongs.map((song) => (
             <li
               key={song.id}
               className={`song-item ${
-                songs.indexOf(song) === currentIndex ? "active" : ""
+                currentSong?.id === song.id ? "active" : ""
               }`}
             >
               <span>
@@ -72,7 +125,9 @@ function App() {
               </span>
 
               <div>
-                <button onClick={() => playSong(songs.indexOf(song))}>▶</button>
+                <button onClick={() => playSong(song)}>
+                  ▶
+                </button>
 
                 <button onClick={() => toggleLike(song.id)}>
                   {likedSongs.includes(song.id) ? "❤️" : "🤍"}
@@ -83,11 +138,16 @@ function App() {
         </ul>
 
         {/* 🎧 Player */}
-        {currentIndex !== null && (
+        {currentSong && (
           <div className="player">
-            <h3>Now Playing: {songs[currentIndex].title}</h3>
+            <h3>Now Playing: {currentSong.title}</h3>
 
-            <audio controls src={songs[currentIndex].url} autoPlay />
+            <audio
+              controls
+              src={currentSong.url}
+              autoPlay
+              onEnded={nextSong}
+            />
 
             <div className="controls">
               <button onClick={prevSong}>⏮</button>
@@ -95,6 +155,10 @@ function App() {
             </div>
           </div>
         )}
+
+        <footer className="footer">
+          © 2026 Algorythm Music Player
+        </footer>
       </div>
     </div>
   );

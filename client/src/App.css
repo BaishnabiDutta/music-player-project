@@ -110,5 +110,37 @@ button:hover {
 /* FOOTER */
 .footer {
   margin-top: 40px;
-  color: #cfc0c0;
+  color: #cf2d2d;
+}
+
+.genres {
+  display: flex;
+  gap: 10px;
+  margin: 20px 0;
+  flex-wrap: wrap;
+}
+
+.genres button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.1);
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.genres button:hover {
+  background: #ff4d6d;
+}
+
+.active-genre {
+  background: #ff4d6d !important;
+}
+
+.footer {
+  margin-top: 30px;
+  text-align: center;
+  color: #ccc;
+  padding-bottom: 20px;
 }
