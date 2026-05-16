@@ -1,0 +1,176 @@
+body {
+  margin: 0;
+  padding: 0;
+
+  font-family: "Poppins", sans-serif;
+
+  background: linear-gradient(135deg, #120000, #2b0000, #4d0000, #700000);
+
+  min-height: 100vh;
+}
+
+/* MAIN LAYOUT */
+
+.music-player-container {
+  display: flex;
+
+  min-height: 100vh;
+}
+
+/* MAIN CONTENT */
+
+.main-content {
+  margin-left: 250px;
+
+  width: calc(100% - 250px);
+
+  padding: 40px;
+
+  padding-bottom: 180px;
+
+  box-sizing: border-box;
+}
+
+/* SEARCH BAR */
+
+.topbar {
+  margin-bottom: 35px;
+}
+
+.topbar input {
+  width: 100%;
+
+  padding: 18px 22px;
+
+  border-radius: 20px;
+
+  border: none;
+
+  outline: none;
+
+  background: rgba(255, 255, 255, 0.08);
+
+  color: white;
+
+  font-size: 1rem;
+
+  backdrop-filter: blur(10px);
+}
+
+.topbar input::placeholder {
+  color: #bdbdbd;
+}
+
+/* GENRES */
+
+.genres {
+  display: flex;
+
+  gap: 14px;
+
+  flex-wrap: wrap;
+
+  margin-bottom: 40px;
+}
+
+.genres button {
+  padding: 12px 22px;
+
+  border-radius: 30px;
+
+  border: none;
+
+  background: rgba(255, 255, 255, 0.08);
+
+  color: white;
+
+  cursor: pointer;
+
+  transition: 0.3s ease;
+}
+
+.genres button:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.active-genre {
+  background: #ff3c78 !important;
+}
+
+/* SECTION TITLE */
+
+.section-header {
+  margin-bottom: 25px;
+}
+
+.section-header h2 {
+  color: white;
+
+  font-size: 3rem;
+
+  margin: 0;
+}
+
+/* SONG GRID */
+
+.songs-grid {
+  display: grid;
+
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+
+  gap: 28px;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 900px) {
+  .sidebar {
+    display: none;
+  }
+
+  .main-content {
+    margin-left: 0;
+
+    width: 100%;
+
+    padding: 20px;
+  }
+
+  .songs-grid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  }
+}
+
+.playlist-header {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  margin-bottom: 30px;
+}
+
+.create-playlist-btn {
+  padding: 14px 22px;
+
+  border: none;
+
+  border-radius: 14px;
+
+  background: #ff3c78;
+
+  color: white;
+
+  cursor: pointer;
+
+  font-size: 1rem;
+}
+
+.empty-playlist {
+  color: #d0d0d0;
+
+  margin-top: 40px;
+
+  font-size: 1.1rem;
+}

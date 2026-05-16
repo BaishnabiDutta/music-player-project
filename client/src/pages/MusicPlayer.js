@@ -1,16 +1,50 @@
 import React, { useEffect, useState, useRef } from "react";
-import "../App.css";
+
+import Sidebar from "../components/Sidebar";
+import Topbar from "../components/Topbar";
+import SongRow from "../components/SongRow";
+import PlaylistCard from "../components/PlaylistCard";
+import PlayerFooter from "../components/PlayerFooter";
+import LoginModal from "../components/LoginModal";
+
+import "./MusicPlayer.css";
 
 function MusicPlayer() {
+  // SONGS
   const [songs, setSongs] = useState([]);
+
+  // CURRENT SONG
   const [currentSong, setCurrentSong] = useState(null);
+
+  // SEARCH
   const [search, setSearch] = useState("");
+
+  // FAVORITES
   const [likedSongs, setLikedSongs] = useState([]);
+
+  // GENRES
   const [selectedGenre, setSelectedGenre] = useState("All");
 
+  // SIDEBAR SECTION
+  const [activeSection, setActiveSection] = useState("home");
+
+  // PLAYLISTS
+  const [playlists, setPlaylists] = useState([]);
+
+  // OPENED PLAYLIST
+  const [openedPlaylist, setOpenedPlaylist] = useState(null);
+
+  // AUDIO REF
   const audioRef = useRef(null);
+
+  // PLAY / PAUSE
   const [isPlaying, setIsPlaying] = useState(false);
 
+  // 🔐 LOGIN STATE (NEW)
+  const getToken = () => localStorage.getItem("token");
+  const [showLogin, setShowLogin] = useState(false);
+
+  // FETCH SONGS
   useEffect(() => {
     fetch("http://localhost:5000/songs")
       .then((res) => res.json())
@@ -18,9 +52,8 @@ function MusicPlayer() {
       .catch((err) => console.log(err));
   }, []);
 
-  // ▶ Play / Pause Song
+  // PLAY SONG
   const playSong = (song) => {
-    // same song → toggle pause/play
     if (currentSong?.id === song.id && audioRef.current) {
       if (isPlaying) {
         audioRef.current.pause();
@@ -29,17 +62,25 @@ function MusicPlayer() {
         audioRef.current.play();
         setIsPlaying(true);
       }
-
       return;
     }
 
-    // new song
     setCurrentSong(song);
     setIsPlaying(true);
   };
 
-  // ❤️ Like Song
+  // ❤️ LIKE SONG (UPDATED WITH LOGIN CHECK)
   const toggleLike = (id) => {
+    const token = getToken();
+
+    console.log("LIKE CLICKED");
+    console.log("TOKEN:", token);
+
+    if (!token) {
+      setShowLogin(true);
+      return;
+    }
+
     setLikedSongs((prev) =>
       prev.includes(id)
         ? prev.filter((songId) => songId !== id)
@@ -47,7 +88,61 @@ function MusicPlayer() {
     );
   };
 
-  // ⏭ Next Song
+  // CREATE PLAYLIST
+  const createPlaylist = () => {
+    const playlistName = prompt("Enter playlist name");
+    if (!playlistName) return;
+
+    const newPlaylist = {
+      id: Date.now(),
+      name: playlistName,
+      songs: [],
+    };
+
+    setPlaylists((prev) => [...prev, newPlaylist]);
+  };
+
+  // ADD TO PLAYLIST
+  const addToPlaylist = (song) => {
+    if (playlists.length === 0) {
+      alert("Create a playlist first!");
+      return;
+    }
+
+    const playlistName = prompt(
+      `Add to which playlist?\n\n${playlists.map((p) => p.name).join("\n")}`,
+    );
+
+    const playlist = playlists.find((p) => p.name === playlistName);
+
+    if (!playlist) {
+      alert("Playlist not found");
+      return;
+    }
+
+    const updatedPlaylists = playlists.map((p) => {
+      if (p.name === playlistName) {
+        return {
+          ...p,
+          songs: [...p.songs, song],
+        };
+      }
+      return p;
+    });
+
+    setPlaylists(updatedPlaylists);
+
+    if (openedPlaylist && openedPlaylist.name === playlistName) {
+      setOpenedPlaylist({
+        ...playlist,
+        songs: [...playlist.songs, song],
+      });
+    }
+
+    alert(`${song.title} added to ${playlistName}`);
+  };
+
+  // NEXT SONG
   const nextSong = () => {
     if (!currentSong) return;
 
@@ -62,7 +157,7 @@ function MusicPlayer() {
     setIsPlaying(true);
   };
 
-  // ⏮ Previous Song
+  // PREVIOUS SONG
   const prevSong = () => {
     if (!currentSong) return;
 
@@ -77,7 +172,7 @@ function MusicPlayer() {
     setIsPlaying(true);
   };
 
-  // 🔍 Filter Songs
+  // FILTER SONGS
   const filteredSongs = songs.filter((song) => {
     const matchesSearch = song.title
       .toLowerCase()
@@ -90,121 +185,147 @@ function MusicPlayer() {
   });
 
   return (
-    <div className="app">
-      <h1>🎧 Algorythm</h1>
-      <p className="tagline">Where code meets rhythm</p>
+    <div className="music-player-container">
+      {/* SIDEBAR */}
+      <Sidebar
+        activeSection={activeSection}
+        setActiveSection={setActiveSection}
+      />
 
-      <div className="container">
-        {/* 🔍 Search Bar */}
-        <input
-          type="text"
-          placeholder="Search songs..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="search"
-        />
+      {/* MAIN CONTENT */}
+      <div className="main-content">
+        {/* TOPBAR */}
+        <Topbar search={search} setSearch={setSearch} />
 
-        {/* 🎼 Genre Buttons */}
-        <div className="genres">
-          {["All", "Pop", "Hip-Hop", "EDM", "Lo-fi", "K-Pop", "R&B"].map(
-            (genre) => (
-              <button
-                key={genre}
-                className={selectedGenre === genre ? "active-genre" : ""}
-                onClick={() => setSelectedGenre(genre)}
-              >
-                {genre}
-              </button>
-            ),
-          )}
-        </div>
-
-        {/* 🎵 Song List */}
-        <ul className="song-list">
-          {filteredSongs.map((song) => (
-            <li
-              key={song.id}
-              className={`song-item ${
-                currentSong?.id === song.id ? "active" : ""
-              }`}
-            >
-              <span>
-                {song.title} - {song.artist}
-              </span>
-
-              <div>
-                <button onClick={() => playSong(song)}>
-                  {currentSong?.id === song.id && isPlaying ? "⏸" : "▶"}
-                </button>
-
-                <button onClick={() => toggleLike(song.id)}>
-                  {likedSongs.includes(song.id) ? "❤️" : "🤍"}
-                </button>
-              </div>
-            </li>
-          ))}
-        </ul>
-
-        {/* ❤️ Favorites Section */}
-        <div className="favorites-section">
-          <h2>❤️ Favorite Songs</h2>
-
-          {likedSongs.length === 0 ? (
-            <p>No favorite songs yet</p>
-          ) : (
-            <ul className="song-list">
-              {songs
-                .filter((song) => likedSongs.includes(song.id))
-                .map((song) => (
-                  <li key={song.id} className="song-item">
-                    <span>
-                      {song.title} - {song.artist}
-                    </span>
-
-                    <div>
-                      <button onClick={() => playSong(song)}>
-                        {currentSong?.id === song.id && isPlaying
-                          ? "⏸"
-                          : "▶"}
-                      </button>
-
-                      <button onClick={() => toggleLike(song.id)}>
-                        ❤️
-                      </button>
-                    </div>
-                  </li>
-                ))}
-            </ul>
-          )}
-        </div>
-
-        {/* 🎧 Player */}
-        {currentSong && (
-          <div className="player">
-            <h3>Now Playing: {currentSong.title}</h3>
-
-            <audio
-              ref={audioRef}
-              controls
-              src={currentSong.url}
-              autoPlay
-              onPlay={() => setIsPlaying(true)}
-              onPause={() => setIsPlaying(false)}
-              onEnded={() => {
-                setIsPlaying(false);
-                nextSong();
-              }}
-            />
-
-            <div className="controls">
-              <button onClick={prevSong}>⏮</button>
-              <button onClick={nextSong}>⏭</button>
+        {/* HOME + FAVORITES */}
+        {(activeSection === "home" || activeSection === "favorites") && (
+          <>
+            {/* GENRES */}
+            <div className="genres">
+              {["All", "Pop", "Hip-Hop", "EDM", "Lo-fi", "K-Pop", "R&B"].map(
+                (genre) => (
+                  <button
+                    key={genre}
+                    className={selectedGenre === genre ? "active-genre" : ""}
+                    onClick={() => setSelectedGenre(genre)}
+                  >
+                    {genre}
+                  </button>
+                ),
+              )}
             </div>
-          </div>
+
+            {/* TITLE */}
+            <div className="section-header">
+              <h2>
+                {activeSection === "favorites"
+                  ? "❤️ Favorite Songs"
+                  : "🔥 Trending Songs"}
+              </h2>
+            </div>
+
+            {/* SONGS */}
+            <div className="songs-list">
+              {(activeSection === "favorites"
+                ? filteredSongs.filter((song) => likedSongs.includes(song.id))
+                : filteredSongs
+              ).map((song) => (
+                <SongRow
+                  key={song.id}
+                  song={song}
+                  onPlay={playSong}
+                  currentSong={currentSong}
+                  isPlaying={isPlaying}
+                  likedSongs={likedSongs}
+                  toggleLike={toggleLike}
+                  addToPlaylist={addToPlaylist}
+                />
+              ))}
+            </div>
+          </>
         )}
 
-        <footer className="footer">© 2026 Algorythm Music Player</footer>
+        {/* PLAYLISTS */}
+        {activeSection === "playlists" && (
+          <>
+            {openedPlaylist ? (
+              <>
+                <div className="playlist-top">
+                  <button
+                    className="back-btn"
+                    onClick={() => setOpenedPlaylist(null)}
+                  >
+                    ← Back
+                  </button>
+
+                  <h2>🎵 {openedPlaylist.name}</h2>
+                </div>
+
+                <div className="songs-list">
+                  {openedPlaylist.songs.length === 0 ? (
+                    <p className="empty-playlist">No songs added</p>
+                  ) : (
+                    openedPlaylist.songs.map((song) => (
+                      <SongRow
+                        key={song.id}
+                        song={song}
+                        onPlay={playSong}
+                        currentSong={currentSong}
+                        isPlaying={isPlaying}
+                        likedSongs={likedSongs}
+                        toggleLike={toggleLike}
+                        addToPlaylist={addToPlaylist}
+                      />
+                    ))
+                  )}
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="playlist-header">
+                  <h2>🎵 Your Playlists</h2>
+
+                  <button
+                    className="create-playlist-btn"
+                    onClick={createPlaylist}
+                  >
+                    + Create Playlist
+                  </button>
+                </div>
+
+                {playlists.length === 0 ? (
+                  <p className="empty-playlist">No playlists yet</p>
+                ) : (
+                  <div className="songs-grid">
+                    {playlists.map((playlist) => (
+                      <PlaylistCard
+                        key={playlist.id}
+                        playlist={playlist}
+                        setOpenedPlaylist={setOpenedPlaylist}
+                      />
+                    ))}
+                  </div>
+                )}
+              </>
+            )}
+          </>
+        )}
       </div>
+
+      {/* FOOTER PLAYER */}
+      {currentSong && (
+        <PlayerFooter
+          currentSong={currentSong}
+          audioRef={audioRef}
+          nextSong={nextSong}
+          prevSong={prevSong}
+          setIsPlaying={setIsPlaying}
+          isPlaying={isPlaying}
+        />
+      )}
+
+      {/* 🔐 LOGIN MODAL (NEW) */}
+      {showLogin && <LoginModal onClose={() => setShowLogin(false)} />}
     </div>
   );
 }

@@ -1,0 +1,84 @@
+.sidebar {
+  width: 250px;
+
+  height: 100vh;
+
+  position: fixed;
+
+  top: 0;
+  left: 0;
+
+  background: rgba(20, 0, 0, 0.92);
+
+  backdrop-filter: blur(14px);
+
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+
+  padding: 30px 20px;
+
+  box-sizing: border-box;
+
+  z-index: 1000;
+}
+
+/* LOGO */
+
+.logo {
+  color: white;
+
+  font-size: 2rem;
+
+  font-weight: 700;
+
+  margin-bottom: 50px;
+}
+
+/* MENU */
+
+.menu {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 16px;
+}
+
+/* BUTTONS */
+
+.menu button {
+  background: transparent;
+
+  border: none;
+
+  color: #d4d4d4;
+
+  font-size: 1rem;
+
+  text-align: left;
+
+  padding: 14px 18px;
+
+  border-radius: 14px;
+
+  cursor: pointer;
+
+  transition: 0.3s ease;
+}
+
+/* HOVER */
+
+.menu button:hover {
+  background: rgba(255, 255, 255, 0.08);
+
+  color: white;
+}
+
+/* ACTIVE MENU */
+
+.active-menu {
+  background: rgba(255, 255, 255, 0.12) !important;
+
+  color: white !important;
+
+  border-left: 4px solid #ff3c78;
+}
