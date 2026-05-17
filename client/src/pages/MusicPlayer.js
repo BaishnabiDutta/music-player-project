@@ -5,60 +5,46 @@ import Topbar from "../components/Topbar";
 import SongRow from "../components/SongRow";
 import PlaylistCard from "../components/PlaylistCard";
 import PlayerFooter from "../components/PlayerFooter";
+import LoginModal from "../components/LoginModal";
 
 import "./MusicPlayer.css";
 
 function MusicPlayer() {
   // SONGS
-
   const [songs, setSongs] = useState([]);
 
   // CURRENT SONG
-
   const [currentSong, setCurrentSong] = useState(null);
 
   // SEARCH
-
   const [search, setSearch] = useState("");
 
   // FAVORITES
-
   const [likedSongs, setLikedSongs] = useState([]);
 
   // GENRES
-
   const [selectedGenre, setSelectedGenre] = useState("All");
 
   // SIDEBAR SECTION
-
   const [activeSection, setActiveSection] = useState("home");
 
   // PLAYLISTS
-
   const [playlists, setPlaylists] = useState([]);
 
   // OPENED PLAYLIST
-
   const [openedPlaylist, setOpenedPlaylist] = useState(null);
 
   // LOGIN STATE
-
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
 
   // AUDIO REF
-
   const audioRef = useRef(null);
 
   // PLAY STATE
-
   const [isPlaying, setIsPlaying] = useState(false);
 
-  // 🔐 LOGIN STATE (NEW)
-  const getToken = () => sessionStorage.getItem("token");
-  const [showLogin, setShowLogin] = useState(false);
-
   // FETCH SONGS
-
   useEffect(() => {
     fetch("http://localhost:5000/songs")
       .then((res) => res.json())
@@ -67,28 +53,23 @@ function MusicPlayer() {
   }, []);
 
   // CHECK LOGIN
-
   useEffect(() => {
-    const loggedIn = localStorage.getItem("loggedIn");
+    const token = sessionStorage.getItem("token");
 
-    if (loggedIn === "true") {
+    if (token) {
       setIsLoggedIn(true);
     }
   }, []);
 
   // PLAY SONG
-
   const playSong = (song) => {
     // SAME SONG
-
     if (currentSong?.id === song.id && audioRef.current) {
       if (isPlaying) {
         audioRef.current.pause();
-
         setIsPlaying(false);
       } else {
         audioRef.current.play();
-
         setIsPlaying(true);
       }
 
@@ -96,32 +77,26 @@ function MusicPlayer() {
     }
 
     // NEW SONG
-
     setCurrentSong(song);
-
     setIsPlaying(true);
   };
 
   // TOGGLE LIKE
-
   const toggleLike = (id) => {
     // LOGIN CHECK
-
     if (!isLoggedIn) {
-      window.location.href = "/login";
-
+      setShowLogin(true);
       return;
     }
 
     setLikedSongs((prev) =>
       prev.includes(id)
         ? prev.filter((songId) => songId !== id)
-        : [...prev, id],
+        : [...prev, id]
     );
   };
 
   // CREATE PLAYLIST
-
   const createPlaylist = () => {
     const playlistName = prompt("Enter playlist name");
 
@@ -129,9 +104,7 @@ function MusicPlayer() {
 
     const newPlaylist = {
       id: Date.now(),
-
       name: playlistName,
-
       songs: [],
     };
 
@@ -139,23 +112,22 @@ function MusicPlayer() {
   };
 
   // ADD TO PLAYLIST
-
   const addToPlaylist = (song) => {
     if (playlists.length === 0) {
       alert("Create a playlist first!");
-
       return;
     }
 
     const playlistName = prompt(
-      `Add to which playlist?\n\n${playlists.map((p) => p.name).join("\n")}`,
+      `Add to which playlist?\n\n${playlists
+        .map((p) => p.name)
+        .join("\n")}`
     );
 
     const playlist = playlists.find((p) => p.name === playlistName);
 
     if (!playlist) {
       alert("Playlist not found");
-
       return;
     }
 
@@ -163,7 +135,6 @@ function MusicPlayer() {
       if (p.name === playlistName) {
         return {
           ...p,
-
           songs: [...p.songs, song],
         };
       }
@@ -174,59 +145,57 @@ function MusicPlayer() {
     setPlaylists(updatedPlaylists);
 
     // LIVE UPDATE
-
     if (openedPlaylist && openedPlaylist.name === playlistName) {
       setOpenedPlaylist({
         ...playlist,
-
         songs: [...playlist.songs, song],
       });
     }
   };
 
   // NEXT SONG
-
   const nextSong = () => {
     if (!currentSong) return;
 
     const currentSongIndex = songs.findIndex(
-      (song) => song.id === currentSong.id,
+      (song) => song.id === currentSong.id
     );
 
     const nextIndex =
-      currentSongIndex === songs.length - 1 ? 0 : currentSongIndex + 1;
+      currentSongIndex === songs.length - 1
+        ? 0
+        : currentSongIndex + 1;
 
     setCurrentSong(songs[nextIndex]);
-
     setIsPlaying(true);
   };
 
   // PREVIOUS SONG
-
   const prevSong = () => {
     if (!currentSong) return;
 
     const currentSongIndex = songs.findIndex(
-      (song) => song.id === currentSong.id,
+      (song) => song.id === currentSong.id
     );
 
     const prevIndex =
-      currentSongIndex === 0 ? songs.length - 1 : currentSongIndex - 1;
+      currentSongIndex === 0
+        ? songs.length - 1
+        : currentSongIndex - 1;
 
     setCurrentSong(songs[prevIndex]);
-
     setIsPlaying(true);
   };
 
   // FILTER SONGS
-
   const filteredSongs = songs.filter((song) => {
     const matchesSearch = song.title
       .toLowerCase()
       .includes(search.toLowerCase());
 
     const matchesGenre =
-      selectedGenre === "All" || song.genre === selectedGenre;
+      selectedGenre === "All" ||
+      song.genre === selectedGenre;
 
     return matchesSearch && matchesGenre;
   });
@@ -238,41 +207,51 @@ function MusicPlayer() {
       }`}
     >
       {/* SIDEBAR */}
-
       <Sidebar
         activeSection={activeSection}
         setActiveSection={setActiveSection}
       />
 
       {/* MAIN CONTENT */}
-
       <div className="main-content">
         {/* TOPBAR */}
-
-        <Topbar search={search} setSearch={setSearch} />
+        <Topbar
+          search={search}
+          setSearch={setSearch}
+        />
 
         {/* HOME + FAVORITES */}
-
-        {(activeSection === "home" || activeSection === "favorites") && (
+        {(activeSection === "home" ||
+          activeSection === "favorites") && (
           <>
             {/* GENRES */}
-
             <div className="genres">
-              {["All", "Pop", "Hip-Hop", "EDM", "Lo-fi", "K-Pop", "R&B"].map(
-                (genre) => (
-                  <button
-                    key={genre}
-                    className={selectedGenre === genre ? "active-genre" : ""}
-                    onClick={() => setSelectedGenre(genre)}
-                  >
-                    {genre}
-                  </button>
-                ),
-              )}
+              {[
+                "All",
+                "Pop",
+                "Hip-Hop",
+                "EDM",
+                "Lo-fi",
+                "K-Pop",
+                "R&B",
+              ].map((genre) => (
+                <button
+                  key={genre}
+                  className={
+                    selectedGenre === genre
+                      ? "active-genre"
+                      : ""
+                  }
+                  onClick={() =>
+                    setSelectedGenre(genre)
+                  }
+                >
+                  {genre}
+                </button>
+              ))}
             </div>
 
             {/* SECTION TITLE */}
-
             <div className="section-header">
               <h2>
                 {activeSection === "favorites"
@@ -282,10 +261,11 @@ function MusicPlayer() {
             </div>
 
             {/* SONGS */}
-
             <div className="songs-list">
               {(activeSection === "favorites"
-                ? filteredSongs.filter((song) => likedSongs.includes(song.id))
+                ? filteredSongs.filter((song) =>
+                    likedSongs.includes(song.id)
+                  )
                 : filteredSongs
               ).map((song) => (
                 <SongRow
@@ -304,17 +284,16 @@ function MusicPlayer() {
         )}
 
         {/* PLAYLISTS */}
-
         {activeSection === "playlists" && (
           <>
-            {/* OPENED PLAYLIST */}
-
             {openedPlaylist ? (
               <>
                 <div className="playlist-top">
                   <button
                     className="back-btn"
-                    onClick={() => setOpenedPlaylist(null)}
+                    onClick={() =>
+                      setOpenedPlaylist(null)
+                    }
                   >
                     ← Back
                   </button>
@@ -323,28 +302,33 @@ function MusicPlayer() {
                 </div>
 
                 <div className="songs-list">
-                  {openedPlaylist.songs.length === 0 ? (
-                    <p className="empty-playlist">No songs added</p>
+                  {openedPlaylist.songs.length ===
+                  0 ? (
+                    <p className="empty-playlist">
+                      No songs added
+                    </p>
                   ) : (
-                    openedPlaylist.songs.map((song) => (
-                      <SongRow
-                        key={song.id}
-                        song={song}
-                        onPlay={playSong}
-                        currentSong={currentSong}
-                        isPlaying={isPlaying}
-                        likedSongs={likedSongs}
-                        toggleLike={toggleLike}
-                        addToPlaylist={addToPlaylist}
-                      />
-                    ))
+                    openedPlaylist.songs.map(
+                      (song) => (
+                        <SongRow
+                          key={song.id}
+                          song={song}
+                          onPlay={playSong}
+                          currentSong={currentSong}
+                          isPlaying={isPlaying}
+                          likedSongs={likedSongs}
+                          toggleLike={toggleLike}
+                          addToPlaylist={
+                            addToPlaylist
+                          }
+                        />
+                      )
+                    )
                   )}
                 </div>
               </>
             ) : (
               <>
-                {/* PLAYLIST HOME */}
-
                 <div className="playlist-header">
                   <h2>Your Playlists</h2>
 
@@ -357,14 +341,18 @@ function MusicPlayer() {
                 </div>
 
                 {playlists.length === 0 ? (
-                  <p className="empty-playlist">No playlists yet</p>
+                  <p className="empty-playlist">
+                    No playlists yet
+                  </p>
                 ) : (
                   <div className="songs-grid">
                     {playlists.map((playlist) => (
                       <PlaylistCard
                         key={playlist.id}
                         playlist={playlist}
-                        setOpenedPlaylist={setOpenedPlaylist}
+                        setOpenedPlaylist={
+                          setOpenedPlaylist
+                        }
                       />
                     ))}
                   </div>
@@ -375,12 +363,12 @@ function MusicPlayer() {
         )}
 
         {/* COPYRIGHT */}
-
-        <div className="copyright">@Algorythm 2026</div>
+        <div className="copyright">
+          @Algorythm 2026
+        </div>
       </div>
 
       {/* PLAYER */}
-
       {currentSong && (
         <PlayerFooter
           currentSong={currentSong}
@@ -389,6 +377,22 @@ function MusicPlayer() {
           prevSong={prevSong}
           setIsPlaying={setIsPlaying}
           isPlaying={isPlaying}
+        />
+      )}
+
+      {/* LOGIN MODAL */}
+      {showLogin && (
+        <LoginModal
+          onClose={() => {
+            setShowLogin(false);
+
+            const token =
+              sessionStorage.getItem("token");
+
+            if (token) {
+              setIsLoggedIn(true);
+            }
+          }}
         />
       )}
     </div>
