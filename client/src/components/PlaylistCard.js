@@ -5,10 +5,9 @@ import "./PlaylistCard.css";
 function PlaylistCard({ playlist, setOpenedPlaylist }) {
   return (
     <div className="playlist-card" onClick={() => setOpenedPlaylist(playlist)}>
-      <img
-        src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f"
-        alt="playlist"
-      />
+      <div className="playlist-music-icon">
+  🎵
+</div>
 
       <h3>{playlist.name}</h3>
 

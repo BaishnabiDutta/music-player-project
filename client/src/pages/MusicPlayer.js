@@ -43,6 +43,10 @@ function MusicPlayer() {
 
   // PLAY STATE
   const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [isShuffle, setIsShuffle] = useState(false);
+  const [repeatMode, setRepeatMode] = useState("off");
 
   // FETCH SONGS
   useEffect(() => {
@@ -154,21 +158,50 @@ function MusicPlayer() {
   };
 
   // NEXT SONG
-  const nextSong = () => {
-    if (!currentSong) return;
+const nextSong = () => {
+  if (!currentSong) return;
 
-    const currentSongIndex = songs.findIndex(
-      (song) => song.id === currentSong.id
+  // SHUFFLE MODE
+  if (isShuffle) {
+    let randomIndex;
+
+    do {
+      randomIndex = Math.floor(
+        Math.random() * songs.length
+      );
+    } while (
+      songs[randomIndex].id ===
+        currentSong.id &&
+      songs.length > 1
     );
 
-    const nextIndex =
-      currentSongIndex === songs.length - 1
-        ? 0
-        : currentSongIndex + 1;
+    setCurrentSong(
+      songs[randomIndex]
+    );
 
-    setCurrentSong(songs[nextIndex]);
     setIsPlaying(true);
-  };
+    return;
+  }
+
+  // NORMAL MODE
+  const currentSongIndex =
+    songs.findIndex(
+      (song) =>
+        song.id === currentSong.id
+    );
+
+  const nextIndex =
+    currentSongIndex ===
+    songs.length - 1
+      ? 0
+      : currentSongIndex + 1;
+
+  setCurrentSong(
+    songs[nextIndex]
+  );
+
+  setIsPlaying(true);
+};
 
   // PREVIOUS SONG
   const prevSong = () => {
@@ -370,15 +403,23 @@ function MusicPlayer() {
 
       {/* PLAYER */}
       {currentSong && (
-        <PlayerFooter
-          currentSong={currentSong}
-          audioRef={audioRef}
-          nextSong={nextSong}
-          prevSong={prevSong}
-          setIsPlaying={setIsPlaying}
-          isPlaying={isPlaying}
-        />
-      )}
+  <PlayerFooter
+    currentSong={currentSong}
+    audioRef={audioRef}
+    nextSong={nextSong}
+    prevSong={prevSong}
+    setIsPlaying={setIsPlaying}
+    isPlaying={isPlaying}
+    currentTime={currentTime}
+    setCurrentTime={setCurrentTime}
+    duration={duration}
+    setDuration={setDuration}
+    isShuffle={isShuffle}
+    setIsShuffle={setIsShuffle}
+    repeatMode={repeatMode}
+    setRepeatMode={setRepeatMode}
+  />
+)}
 
       {/* LOGIN MODAL */}
       {showLogin && (
