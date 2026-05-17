@@ -41,10 +41,11 @@ function MusicPlayer() {
   const [isPlaying, setIsPlaying] = useState(false);
 
   // 🔐 LOGIN STATE (NEW)
-  const getToken = () => localStorage.getItem("token");
+  const getToken = () => sessionStorage.getItem("token");
   const [showLogin, setShowLogin] = useState(false);
 
   // FETCH SONGS
+
   useEffect(() => {
     fetch("http://localhost:5000/songs")
       .then((res) => res.json())

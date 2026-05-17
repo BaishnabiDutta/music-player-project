@@ -6,7 +6,7 @@ export default function LoginModal({ onClose }) {
 
   const handleLogin = () => {
     // 🔐 Save login token (temporary demo login)
-    localStorage.setItem("token", "demo-token");
+    sessionStorage.setItem("token", "demo-token");
 
     // close modal
     onClose();
