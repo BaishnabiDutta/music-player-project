@@ -1,15 +1,26 @@
 import React from "react";
+
 import "./Topbar.css";
 
 function Topbar({ search, setSearch }) {
   return (
     <div className="topbar">
-      <input
-        type="text"
-        placeholder="Search songs, artists..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
+      {/* LEFT */}
+
+      <div className="topbar-left">
+        <p>Where code meets rhythm</p>
+      </div>
+
+      {/* RIGHT */}
+
+      <div className="topbar-right">
+        <input
+          type="text"
+          placeholder="Search songs..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      </div>
     </div>
   );
 }

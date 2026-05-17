@@ -38,13 +38,12 @@ function PlayerFooter({
 
   return (
     <div className="player-footer">
-      {/* SONG INFO */}
+      {/* LEFT */}
 
       <div className="player-song-info">
-        <img
-          src="https://images.unsplash.com/photo-1501386761578-eac5c94b800a"
-          alt="cover"
-        />
+        <div className={`vinyl-disc ${isPlaying ? "spin" : ""}`}>
+          <div className="vinyl-inner"></div>
+        </div>
 
         <div>
           <h3>{currentSong.title}</h3>
@@ -63,6 +62,16 @@ function PlayerFooter({
         </button>
 
         <button onClick={nextSong}>⏭</button>
+      </div>
+
+      {/* WAVEFORM */}
+
+      <div className="waveform">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
       </div>
 
       {/* VOLUME */}

@@ -16,10 +16,9 @@ function SongRow({
       {/* LEFT */}
 
       <div className="song-left">
-        <img
-          src="https://images.unsplash.com/photo-1501386761578-eac5c94b800a"
-          alt="cover"
-        />
+        {/* MUSIC ICON */}
+
+        <div className="music-icon">🎵</div>
 
         <div>
           <h3>{song.title}</h3>

@@ -5,46 +5,56 @@ import Topbar from "../components/Topbar";
 import SongRow from "../components/SongRow";
 import PlaylistCard from "../components/PlaylistCard";
 import PlayerFooter from "../components/PlayerFooter";
-import LoginModal from "../components/LoginModal";
 
 import "./MusicPlayer.css";
 
 function MusicPlayer() {
   // SONGS
+
   const [songs, setSongs] = useState([]);
 
   // CURRENT SONG
+
   const [currentSong, setCurrentSong] = useState(null);
 
   // SEARCH
+
   const [search, setSearch] = useState("");
 
   // FAVORITES
+
   const [likedSongs, setLikedSongs] = useState([]);
 
   // GENRES
+
   const [selectedGenre, setSelectedGenre] = useState("All");
 
   // SIDEBAR SECTION
+
   const [activeSection, setActiveSection] = useState("home");
 
   // PLAYLISTS
+
   const [playlists, setPlaylists] = useState([]);
 
   // OPENED PLAYLIST
+
   const [openedPlaylist, setOpenedPlaylist] = useState(null);
 
+  // LOGIN STATE
+
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
   // AUDIO REF
+
   const audioRef = useRef(null);
 
-  // PLAY / PAUSE
+  // PLAY STATE
+
   const [isPlaying, setIsPlaying] = useState(false);
 
-  // 🔐 LOGIN STATE (NEW)
-  const getToken = () => localStorage.getItem("token");
-  const [showLogin, setShowLogin] = useState(false);
-
   // FETCH SONGS
+
   useEffect(() => {
     fetch("http://localhost:5000/songs")
       .then((res) => res.json())
@@ -52,32 +62,50 @@ function MusicPlayer() {
       .catch((err) => console.log(err));
   }, []);
 
+  // CHECK LOGIN
+
+  useEffect(() => {
+    const loggedIn = localStorage.getItem("loggedIn");
+
+    if (loggedIn === "true") {
+      setIsLoggedIn(true);
+    }
+  }, []);
+
   // PLAY SONG
+
   const playSong = (song) => {
+    // SAME SONG
+
     if (currentSong?.id === song.id && audioRef.current) {
       if (isPlaying) {
         audioRef.current.pause();
+
         setIsPlaying(false);
       } else {
         audioRef.current.play();
+
         setIsPlaying(true);
       }
+
       return;
     }
 
+    // NEW SONG
+
     setCurrentSong(song);
+
     setIsPlaying(true);
   };
 
-  // ❤️ LIKE SONG (UPDATED WITH LOGIN CHECK)
+  // TOGGLE LIKE
+
   const toggleLike = (id) => {
-    const token = getToken();
+    // LOGIN CHECK
 
-    console.log("LIKE CLICKED");
-    console.log("TOKEN:", token);
+    if (!isLoggedIn) {
+      window.location.href = "/login";
 
-    if (!token) {
-      setShowLogin(true);
       return;
     }
 
@@ -89,13 +117,17 @@ function MusicPlayer() {
   };
 
   // CREATE PLAYLIST
+
   const createPlaylist = () => {
     const playlistName = prompt("Enter playlist name");
+
     if (!playlistName) return;
 
     const newPlaylist = {
       id: Date.now(),
+
       name: playlistName,
+
       songs: [],
     };
 
@@ -103,9 +135,11 @@ function MusicPlayer() {
   };
 
   // ADD TO PLAYLIST
+
   const addToPlaylist = (song) => {
     if (playlists.length === 0) {
       alert("Create a playlist first!");
+
       return;
     }
 
@@ -117,6 +151,7 @@ function MusicPlayer() {
 
     if (!playlist) {
       alert("Playlist not found");
+
       return;
     }
 
@@ -124,25 +159,29 @@ function MusicPlayer() {
       if (p.name === playlistName) {
         return {
           ...p,
+
           songs: [...p.songs, song],
         };
       }
+
       return p;
     });
 
     setPlaylists(updatedPlaylists);
 
+    // LIVE UPDATE
+
     if (openedPlaylist && openedPlaylist.name === playlistName) {
       setOpenedPlaylist({
         ...playlist,
+
         songs: [...playlist.songs, song],
       });
     }
-
-    alert(`${song.title} added to ${playlistName}`);
   };
 
   // NEXT SONG
+
   const nextSong = () => {
     if (!currentSong) return;
 
@@ -154,10 +193,12 @@ function MusicPlayer() {
       currentSongIndex === songs.length - 1 ? 0 : currentSongIndex + 1;
 
     setCurrentSong(songs[nextIndex]);
+
     setIsPlaying(true);
   };
 
   // PREVIOUS SONG
+
   const prevSong = () => {
     if (!currentSong) return;
 
@@ -169,10 +210,12 @@ function MusicPlayer() {
       currentSongIndex === 0 ? songs.length - 1 : currentSongIndex - 1;
 
     setCurrentSong(songs[prevIndex]);
+
     setIsPlaying(true);
   };
 
   // FILTER SONGS
+
   const filteredSongs = songs.filter((song) => {
     const matchesSearch = song.title
       .toLowerCase()
@@ -185,22 +228,31 @@ function MusicPlayer() {
   });
 
   return (
-    <div className="music-player-container">
+    <div
+      className={`music-player-container ${
+        currentSong?.genre?.toLowerCase().replace(" ", "-") || ""
+      }`}
+    >
       {/* SIDEBAR */}
+
       <Sidebar
         activeSection={activeSection}
         setActiveSection={setActiveSection}
       />
 
       {/* MAIN CONTENT */}
+
       <div className="main-content">
         {/* TOPBAR */}
+
         <Topbar search={search} setSearch={setSearch} />
 
         {/* HOME + FAVORITES */}
+
         {(activeSection === "home" || activeSection === "favorites") && (
           <>
             {/* GENRES */}
+
             <div className="genres">
               {["All", "Pop", "Hip-Hop", "EDM", "Lo-fi", "K-Pop", "R&B"].map(
                 (genre) => (
@@ -215,16 +267,18 @@ function MusicPlayer() {
               )}
             </div>
 
-            {/* TITLE */}
+            {/* SECTION TITLE */}
+
             <div className="section-header">
               <h2>
                 {activeSection === "favorites"
-                  ? "❤️ Favorite Songs"
-                  : "🔥 Trending Songs"}
+                  ? "Favorite Songs"
+                  : "Trending Songs"}
               </h2>
             </div>
 
             {/* SONGS */}
+
             <div className="songs-list">
               {(activeSection === "favorites"
                 ? filteredSongs.filter((song) => likedSongs.includes(song.id))
@@ -246,8 +300,11 @@ function MusicPlayer() {
         )}
 
         {/* PLAYLISTS */}
+
         {activeSection === "playlists" && (
           <>
+            {/* OPENED PLAYLIST */}
+
             {openedPlaylist ? (
               <>
                 <div className="playlist-top">
@@ -258,7 +315,7 @@ function MusicPlayer() {
                     ← Back
                   </button>
 
-                  <h2>🎵 {openedPlaylist.name}</h2>
+                  <h2>{openedPlaylist.name}</h2>
                 </div>
 
                 <div className="songs-list">
@@ -282,8 +339,10 @@ function MusicPlayer() {
               </>
             ) : (
               <>
+                {/* PLAYLIST HOME */}
+
                 <div className="playlist-header">
-                  <h2>🎵 Your Playlists</h2>
+                  <h2>Your Playlists</h2>
 
                   <button
                     className="create-playlist-btn"
@@ -310,9 +369,14 @@ function MusicPlayer() {
             )}
           </>
         )}
+
+        {/* COPYRIGHT */}
+
+        <div className="copyright">@Algorythm 2026</div>
       </div>
 
-      {/* FOOTER PLAYER */}
+      {/* PLAYER */}
+
       {currentSong && (
         <PlayerFooter
           currentSong={currentSong}
@@ -323,9 +387,6 @@ function MusicPlayer() {
           isPlaying={isPlaying}
         />
       )}
-
-      {/* 🔐 LOGIN MODAL (NEW) */}
-      {showLogin && <LoginModal onClose={() => setShowLogin(false)} />}
     </div>
   );
 }
