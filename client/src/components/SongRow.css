@@ -16,6 +16,8 @@
   margin-bottom: 18px;
 
   transition: 0.3s ease;
+
+  backdrop-filter: blur(10px);
 }
 
 .song-row:hover {
@@ -23,6 +25,8 @@
 
   transform: scale(1.01);
 }
+
+/* LEFT */
 
 .song-left {
   display: flex;
@@ -32,15 +36,31 @@
   gap: 18px;
 }
 
-.song-left img {
-  width: 70px;
+/* MUSIC ICON */
 
-  height: 70px;
+.music-icon {
+  width: 68px;
 
-  object-fit: cover;
+  height: 68px;
 
-  border-radius: 14px;
+  border-radius: 18px;
+
+  background: linear-gradient(135deg, #5c0011, #8b0000, #3d000c);
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  font-size: 1.7rem;
+
+  color: #ffd6de;
+
+  box-shadow: 0 0 18px rgba(139, 0, 0, 0.45);
 }
+
+/* TEXT */
 
 .song-left h3 {
   margin: 0;
@@ -53,8 +73,10 @@
 .song-left p {
   margin-top: 6px;
 
-  color: #bdbdbd;
+  color: #c9c9c9;
 }
+
+/* RIGHT */
 
 .song-right {
   display: flex;
@@ -66,7 +88,11 @@
 
 .song-right span {
   color: #ff9dbb;
+
+  font-weight: 500;
 }
+
+/* BUTTONS */
 
 .song-right button {
   width: 42px;
@@ -79,9 +105,17 @@
 
   cursor: pointer;
 
-  background: #ff3c78;
+  background: rgba(255, 255, 255, 0.08);
 
   color: white;
 
   font-size: 1rem;
+
+  transition: 0.3s ease;
+}
+
+.song-right button:hover {
+  background: #8b0000;
+
+  transform: scale(1.08);
 }
