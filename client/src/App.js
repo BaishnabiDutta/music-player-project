@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from "react";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+} from "react-router-dom";
 
 import MusicPlayer from "./pages/MusicPlayer";
+import Register from "./pages/Register";
 
 import "./App.css";
 
@@ -17,16 +23,25 @@ function App() {
     return (
       <div className="loader-screen">
         <h1>ALGORYTHM</h1>
-
         <p>Where code meets rhythm</p>
       </div>
     );
   }
 
   return (
-    <div className="App">
-      <MusicPlayer />
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route
+          path="/"
+          element={<MusicPlayer />}
+        />
+
+        <Route
+          path="/register"
+          element={<Register />}
+        />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

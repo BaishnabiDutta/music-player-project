@@ -1,18 +1,54 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function LoginModal({ onClose }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = () => {
-    // 🔐 Save login token (temporary demo login)
-    sessionStorage.setItem("token", "demo-token");
+  const navigate = useNavigate();
 
-    // close modal
-    onClose();
+  const handleLogin = async () => {
+    try {
+      const res = await fetch(
+        "http://localhost:5000/api/users/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+          body: JSON.stringify({
+            email,
+            password,
+          }),
+        }
+      );
 
-    // optional: refresh so app immediately recognizes login
-    window.location.reload();
+      const data = await res.json();
+
+      if (res.ok) {
+        // SAVE TOKEN
+        localStorage.setItem(
+          "token",
+          data.token
+        );
+
+        // SAVE EMAIL
+        localStorage.setItem(
+          "email",
+          email
+        );
+
+        alert("Login Successful");
+
+        window.location.reload();
+      } else {
+        alert(data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      alert("Login Failed");
+    }
   };
 
   return (
@@ -23,9 +59,11 @@ export default function LoginModal({ onClose }) {
         left: 0,
         right: 0,
         bottom: 0,
-        background: "rgba(0,0,0,0.6)",
+        background:
+          "rgba(0,0,0,0.6)",
         display: "flex",
-        justifyContent: "center",
+        justifyContent:
+          "center",
         alignItems: "center",
         zIndex: 9999,
       }}
@@ -42,18 +80,28 @@ export default function LoginModal({ onClose }) {
         <h2>Login Required</h2>
 
         <input
-          style={{ width: "100%", marginBottom: "10px" }}
+          style={{
+            width: "100%",
+            marginBottom: "10px",
+          }}
           placeholder="Email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) =>
+            setEmail(e.target.value)
+          }
         />
 
         <input
-          style={{ width: "100%", marginBottom: "10px" }}
+          style={{
+            width: "100%",
+            marginBottom: "10px",
+          }}
           type="password"
           placeholder="Password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e) =>
+            setPassword(e.target.value)
+          }
         />
 
         <button
@@ -65,6 +113,25 @@ export default function LoginModal({ onClose }) {
           onClick={handleLogin}
         >
           Login
+        </button>
+
+        <button
+          style={{
+            width: "100%",
+            padding: "8px",
+            marginBottom: "10px",
+            background: "#4CAF50",
+            color: "white",
+            border: "none",
+            borderRadius: "5px",
+            cursor: "pointer",
+          }}
+          onClick={() => {
+            onClose();
+            navigate("/register");
+          }}
+        >
+          Register
         </button>
 
         <button

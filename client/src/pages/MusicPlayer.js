@@ -57,13 +57,27 @@ function MusicPlayer() {
   }, []);
 
   // CHECK LOGIN
-  useEffect(() => {
-    const token = sessionStorage.getItem("token");
+useEffect(() => {
+  const token = localStorage.getItem("token");
 
-    if (token) {
-      setIsLoggedIn(true);
-    }
-  }, []);
+  if (token) {
+    setIsLoggedIn(true);
+  }
+}, []);
+
+// LOAD FAVORITES
+useEffect(() => {
+  const savedFavorites =
+    JSON.parse(
+      localStorage.getItem(
+        "likedSongs"
+      )
+    ) || [];
+
+  setLikedSongs(
+    savedFavorites
+  );
+}, []);
 
   // PLAY SONG
   const playSong = (song) => {
@@ -85,20 +99,94 @@ function MusicPlayer() {
     setIsPlaying(true);
   };
 
-  // TOGGLE LIKE
-  const toggleLike = (id) => {
-    // LOGIN CHECK
-    if (!isLoggedIn) {
+  // ADD TO FAVORITES
+const addToFavorites =
+  async (song) => {
+    const email =
+      localStorage.getItem(
+        "email"
+      );
+
+    if (!email) {
       setShowLogin(true);
       return;
     }
 
-    setLikedSongs((prev) =>
-      prev.includes(id)
-        ? prev.filter((songId) => songId !== id)
-        : [...prev, id]
-    );
+    try {
+      await fetch(
+        "http://localhost:5000/api/users/favorite",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+          body: JSON.stringify({
+            email,
+            song,
+          }),
+        }
+      );
+    } catch (error) {
+      console.log(error);
+    }
   };
+
+ // TOGGLE LIKE
+const toggleLike = async (song) => {
+  // LOGIN CHECK
+  if (!isLoggedIn) {
+    setShowLogin(true);
+    return;
+  }
+
+  const songId =
+    song._id || song.id;
+
+  let updatedLikes =
+    [];
+
+  setLikedSongs(
+    (prev) => {
+      const alreadyLiked =
+        prev.includes(
+          songId
+        );
+
+      updatedLikes =
+        alreadyLiked
+          ? prev.filter(
+              (id) =>
+                id !==
+                songId
+            )
+          : [
+              ...prev,
+              songId,
+            ];
+
+      localStorage.setItem(
+        "likedSongs",
+        JSON.stringify(
+          updatedLikes
+        )
+      );
+
+      return updatedLikes;
+    }
+  );
+
+  // SAVE TO DATABASE
+  if (
+    !likedSongs.includes(
+      songId
+    )
+  ) {
+    await addToFavorites(
+      song
+    );
+  }
+};
 
   // CREATE PLAYLIST
   const createPlaylist = () => {
@@ -297,12 +385,16 @@ const nextSong = () => {
             <div className="songs-list">
               {(activeSection === "favorites"
                 ? filteredSongs.filter((song) =>
-                    likedSongs.includes(song.id)
-                  )
+  likedSongs.includes(
+    song._id || song.id
+  )
+)
                 : filteredSongs
               ).map((song) => (
                 <SongRow
-                  key={song.id}
+                  key={
+                    song._id ||song.id
+                  }
                   song={song}
                   onPlay={playSong}
                   currentSong={currentSong}
@@ -422,22 +514,22 @@ const nextSong = () => {
 )}
 
       {/* LOGIN MODAL */}
-      {showLogin && (
-        <LoginModal
-          onClose={() => {
-            setShowLogin(false);
+{showLogin && (
+  <LoginModal
+    onClose={() => {
+      setShowLogin(false);
 
-            const token =
-              sessionStorage.getItem("token");
+      const token =
+        localStorage.getItem("token");
 
-            if (token) {
-              setIsLoggedIn(true);
-            }
-          }}
-        />
-      )}
-    </div>
-  );
+      if (token) {
+        setIsLoggedIn(true);
+      }
+    }}
+  />
+)}
+</div>
+);
 }
 
 export default MusicPlayer;

@@ -1,11 +1,28 @@
+const userRoutes = require("./routes/userRoutes");
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
-
+const mongoose = require("mongoose");
+const Song = require("./models/Song");
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+app.use("/api/users", userRoutes);
+
+// CONNECT MONGODB
+mongoose.connect(
+  "mongodb://taiprachi1_db_user:u7yodFXZJCKXTq9v@ac-v71oqvk-shard-00-00.wksowcp.mongodb.net:27017,ac-v71oqvk-shard-00-01.wksowcp.mongodb.net:27017,ac-v71oqvk-shard-00-02.wksowcp.mongodb.net:27017/musicDB?ssl=true&replicaSet=atlas-tdi57f-shard-0&authSource=admin&retryWrites=true&w=majority&tls=true",
+  {
+    serverSelectionTimeoutMS: 60000,
+    socketTimeoutMS: 60000
+  }
+)
+
+.then(() => console.log("MongoDB Connected"))
+.catch((err) => console.log("MongoDB Error:", err));
+
 
 // Serve MP3 files
 app.use(
@@ -21,123 +38,16 @@ app.get("/", (req, res) => {
 });
 
 // Songs Route
-app.get("/songs", (req, res) => {
-  const songs = [
-    {
-      id: 1,
-      title: "Blinding Lights",
-      artist: "The Weeknd",
-      genre: "Pop",
-      url: "http://localhost:5000/songs/blindinglights.mp3",
-    },
-    {
-      id: 2,
-      title: "Espresso",
-      artist: "Sabrina Carpenter",
-      genre: "Pop",
-      url: "http://localhost:5000/songs/espresso.mp3",
-    },
-    {
-      id: 3,
-      title: "God's Plan",
-      artist: "Drake",
-      genre: "Hip-Hop",
-      url: "http://localhost:5000/songs/godsplan.mp3",
-    },
-    {
-      id: 4,
-      title: "SICKO MODE",
-      artist: "Travis Scott",
-      genre: "Hip-Hop",
-      url: "http://localhost:5000/songs/sickomode.mp3",
-    },
-    {
-      id: 5,
-      title: "Animals",
-      artist: "Martin Garrix",
-      genre: "EDM",
-      url: "http://localhost:5000/songs/animals.mp3",
-    },
-    {
-      id: 6,
-      title: "Titanium",
-      artist: "David Guetta ft. Sia",
-      genre: "EDM",
-      url: "http://localhost:5000/songs/titanium.mp3",
-    },
-    {
-      id: 7,
-      title: "Snowman",
-      artist: "WYS",
-      genre: "Lo-fi",
-      url: "http://localhost:5000/songs/snowman.mp3",
-    },
-    {
-      id: 8,
-      title: "Night Drive",
-      artist: "Lo-fi Dreams",
-      genre: "Lo-fi",
-      url: "http://localhost:5000/songs/nightdrive.mp3",
-    },
-    {
-      id: 9,
-      title: "Bite Me",
-      artist: "ENHYPEN",
-      genre: "K-Pop",
-      url: "http://localhost:5000/songs/biteme.mp3",
-    },
-    {
-      id: 10,
-      title: "DASH",
-      artist: "NMIXX",
-      genre: "K-Pop",
-      url: "http://localhost:5000/songs/dash.mp3",
-    },
-    {
-      id: 11,
-      title: "The Chase",
-      artist: "Hearts2Hearts",
-      genre: "K-Pop",
-      url: "http://localhost:5000/songs/thechase.mp3",
-    },
-    {
-      id: 12,
-      title: "I DO ME",
-      artist: "KiiiKiii",
-      genre: "K-Pop",
-      url: "http://localhost:5000/songs/idome.mp3",
-    },
-    {
-      id: 13,
-      title: "Get You",
-      artist: "Daniel Caesar ft. Kali Uchis",
-      genre: "R&B",
-      url: "http://localhost:5000/songs/getyou.mp3",
-    },
-    {
-      id: 14,
-      title: "Best Part",
-      artist: "Daniel Caesar ft. H.E.R.",
-      genre: "R&B",
-      url: "http://localhost:5000/songs/bestpart.mp3",
-    },
-    {
-      id: 15,
-      title: "Snooze",
-      artist: "SZA",
-      genre: "R&B",
-      url: "http://localhost:5000/songs/snooze.mp3",
-    },
-    {
-      id: 16,
-      title: "Saturn",
-      artist: "SZA",
-      genre: "R&B",
-      url: "http://localhost:5000/songs/saturn.mp3",
-    },
-  ];
-
-  res.json(songs);
+app.get("/songs", async (req, res) => {
+  try {
+    const songs = await Song.find();
+    res.json(songs);
+  } catch (error) {
+    res.status(500).json({
+      message: "Error fetching songs",
+      error,
+    });
+  }
 });
 
 // Start Server

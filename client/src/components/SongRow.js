@@ -11,42 +11,73 @@ function SongRow({
   toggleLike,
   addToPlaylist,
 }) {
+  const songId =
+    song._id || song.id;
+
   return (
     <div className="song-row">
       {/* LEFT */}
-
       <div className="song-left">
         {/* MUSIC ICON */}
-
-        <div className="music-icon">🎵</div>
+        <div className="music-icon">
+          🎵
+        </div>
 
         <div>
-          <h3>{song.title}</h3>
+          <h3>
+            {song.title}
+          </h3>
 
-          <p>{song.artist}</p>
+          <p>
+            {song.artist}
+          </p>
         </div>
       </div>
 
       {/* RIGHT */}
-
       <div className="song-right">
-        <span>{song.genre}</span>
+        <span>
+          {song.genre}
+        </span>
 
         {/* PLAY */}
-
-        <button onClick={() => onPlay(song)}>
-          {currentSong?.id === song.id && isPlaying ? "⏸" : "▶"}
+        <button
+          onClick={() =>
+            onPlay(song)
+          }
+        >
+          {(
+            currentSong?._id ||
+            currentSong?.id
+          ) === songId &&
+          isPlaying
+            ? "⏸"
+            : "▶"}
         </button>
 
         {/* LIKE */}
-
-        <button onClick={() => toggleLike(song.id)}>
-          {likedSongs.includes(song.id) ? "❤️" : "🤍"}
+        <button
+          onClick={() =>
+            toggleLike(song)
+          }
+        >
+          {likedSongs.includes(
+            songId
+          )
+            ? "❤️"
+            : "🤍"}
         </button>
 
         {/* ADD TO PLAYLIST */}
-
-        <button onClick={() => addToPlaylist(song)}>➕</button>
+        <button
+          onClick={() =>
+            addToPlaylist(
+              song
+            )
+          }
+        >
+          ➕
+        </button>
       </div>
     </div>
   );
