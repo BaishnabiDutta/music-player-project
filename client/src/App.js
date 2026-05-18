@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-} from "react-router-dom";
+
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+import { ToastContainer } from "react-toastify";
+
+import "react-toastify/dist/ReactToastify.css";
 
 import MusicPlayer from "./pages/MusicPlayer";
 import Register from "./pages/Register";
@@ -23,6 +24,7 @@ function App() {
     return (
       <div className="loader-screen">
         <h1>ALGORYTHM</h1>
+
         <p>Where code meets rhythm</p>
       </div>
     );
@@ -30,16 +32,22 @@ function App() {
 
   return (
     <BrowserRouter>
-      <Routes>
-        <Route
-          path="/"
-          element={<MusicPlayer />}
-        />
+      {/* TOAST CONTAINER */}
 
-        <Route
-          path="/register"
-          element={<Register />}
-        />
+      <ToastContainer
+        position="top-right"
+        autoClose={2500}
+        hideProgressBar={false}
+        newestOnTop={true}
+        closeOnClick
+        pauseOnHover
+        theme="dark"
+      />
+
+      <Routes>
+        <Route path="/" element={<MusicPlayer />} />
+
+        <Route path="/register" element={<Register />} />
       </Routes>
     </BrowserRouter>
   );
