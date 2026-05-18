@@ -24,7 +24,8 @@ export default function LoginModal({ onClose }) {
         }
       );
 
-      const data = await res.json();
+      const data =
+        await res.json();
 
       if (res.ok) {
         // SAVE TOKEN
@@ -36,10 +37,18 @@ export default function LoginModal({ onClose }) {
         // SAVE EMAIL
         localStorage.setItem(
           "email",
-          email
+          data.user.email
         );
 
-        alert("Login Successful");
+        // SAVE ADMIN STATUS
+        localStorage.setItem(
+          "isAdmin",
+          data.user.isAdmin
+        );
+
+        alert(
+          "Login Successful"
+        );
 
         window.location.reload();
       } else {
@@ -77,30 +86,38 @@ export default function LoginModal({ onClose }) {
           textAlign: "center",
         }}
       >
-        <h2>Login Required</h2>
+        <h2>
+          Login Required
+        </h2>
 
         <input
           style={{
             width: "100%",
-            marginBottom: "10px",
+            marginBottom:
+              "10px",
           }}
           placeholder="Email"
           value={email}
           onChange={(e) =>
-            setEmail(e.target.value)
+            setEmail(
+              e.target.value
+            )
           }
         />
 
         <input
           style={{
             width: "100%",
-            marginBottom: "10px",
+            marginBottom:
+              "10px",
           }}
           type="password"
           placeholder="Password"
           value={password}
           onChange={(e) =>
-            setPassword(e.target.value)
+            setPassword(
+              e.target.value
+            )
           }
         />
 
@@ -108,9 +125,12 @@ export default function LoginModal({ onClose }) {
           style={{
             width: "100%",
             padding: "8px",
-            marginBottom: "10px",
+            marginBottom:
+              "10px",
           }}
-          onClick={handleLogin}
+          onClick={
+            handleLogin
+          }
         >
           Login
         </button>
@@ -119,16 +139,22 @@ export default function LoginModal({ onClose }) {
           style={{
             width: "100%",
             padding: "8px",
-            marginBottom: "10px",
-            background: "#4CAF50",
+            marginBottom:
+              "10px",
+            background:
+              "#4CAF50",
             color: "white",
             border: "none",
-            borderRadius: "5px",
-            cursor: "pointer",
+            borderRadius:
+              "5px",
+            cursor:
+              "pointer",
           }}
           onClick={() => {
             onClose();
-            navigate("/register");
+            navigate(
+              "/register"
+            );
           }}
         >
           Register
@@ -138,7 +164,8 @@ export default function LoginModal({ onClose }) {
           style={{
             width: "100%",
             padding: "8px",
-            background: "#ccc",
+            background:
+              "#ccc",
           }}
           onClick={onClose}
         >

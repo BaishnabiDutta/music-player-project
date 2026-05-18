@@ -1,0 +1,38 @@
+.admin-page {
+  display: flex;
+  gap: 30px;
+  padding: 40px;
+  min-height: 100vh;
+  background: #121212;
+  color: white;
+}
+
+.admin-left,
+.admin-right {
+  flex: 1;
+  background: #1f1f1f;
+  padding: 25px;
+  border-radius: 15px;
+}
+
+.admin-left input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+}
+
+.admin-left button {
+  width: 100%;
+  padding: 12px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 14px;
+  border-bottom: 1px solid #333;
+}

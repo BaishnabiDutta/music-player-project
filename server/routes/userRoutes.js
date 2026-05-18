@@ -104,8 +104,9 @@ router.post(
       const token =
         jwt.sign(
           {
-            id:
-              user._id,
+            id: user._id,
+            isAdmin:
+              user.isAdmin,
           },
           "secretkey",
           {
@@ -117,7 +118,18 @@ router.post(
       res.json({
         message:
           "Login Successful",
+
         token,
+
+        user: {
+          id: user._id,
+          name:
+            user.name,
+          email:
+            user.email,
+          isAdmin:
+            user.isAdmin,
+        },
       });
     } catch (error) {
       res.status(500).json({

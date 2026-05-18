@@ -1,4 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, {
+  useEffect,
+  useState,
+} from "react";
+
 import {
   BrowserRouter,
   Routes,
@@ -7,11 +11,13 @@ import {
 
 import MusicPlayer from "./pages/MusicPlayer";
 import Register from "./pages/Register";
+import AdminPage from "./AdminPage";
 
 import "./App.css";
 
 function App() {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] =
+    useState(true);
 
   useEffect(() => {
     setTimeout(() => {
@@ -22,8 +28,14 @@ function App() {
   if (loading) {
     return (
       <div className="loader-screen">
-        <h1>ALGORYTHM</h1>
-        <p>Where code meets rhythm</p>
+        <h1>
+          ALGORYTHM
+        </h1>
+
+        <p>
+          Where code meets
+          rhythm
+        </p>
       </div>
     );
   }
@@ -33,12 +45,24 @@ function App() {
       <Routes>
         <Route
           path="/"
-          element={<MusicPlayer />}
+          element={
+            <MusicPlayer />
+          }
         />
 
         <Route
           path="/register"
-          element={<Register />}
+          element={
+            <Register />
+          }
+        />
+
+        {/* ADMIN ROUTE */}
+        <Route
+          path="/admin"
+          element={
+            <AdminPage />
+          }
         />
       </Routes>
     </BrowserRouter>
