@@ -1,79 +1,134 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+} from "react";
 
 import "./Topbar.css";
 
-import { FaUserCircle } from "react-icons/fa";
+import {
+  FaUserCircle,
+} from "react-icons/fa";
 
-function Topbar({ search, setSearch, isLoggedIn, setIsLoggedIn }) {
-  const [showDropdown, setShowDropdown] = useState(false);
+function Topbar({
+  search,
+  setSearch,
+  isLoggedIn,
+  setIsLoggedIn,
+}) {
+  const [
+    showDropdown,
+    setShowDropdown,
+  ] = useState(false);
 
-  const dropdownRef = useRef(null);
+  const dropdownRef =
+    useRef(null);
 
-  // CLOSE DROPDOWN WHEN CLICKING OUTSIDE
-
+  // CLOSE DROPDOWN
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setShowDropdown(false);
-      }
-    };
+    const handleClickOutside =
+      (event) => {
+        if (
+          dropdownRef.current &&
+          !dropdownRef.current.contains(
+            event.target
+          )
+        ) {
+          setShowDropdown(
+            false
+          );
+        }
+      };
 
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener(
+      "mousedown",
+      handleClickOutside
+    );
 
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener(
+        "mousedown",
+        handleClickOutside
+      );
     };
   }, []);
 
   // LOGOUT
+  const handleLogout =
+    () => {
+      localStorage.removeItem(
+        "token"
+      );
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
+      localStorage.removeItem(
+        "email"
+      );
 
-    localStorage.removeItem("email");
+      localStorage.removeItem(
+        "isAdmin"
+      );
 
-    localStorage.removeItem("likedSongs");
+      localStorage.removeItem(
+        "likedSongs"
+      );
 
-    setIsLoggedIn(false);
+      setIsLoggedIn(false);
 
-    window.location.reload();
-  };
+      window.location.reload();
+    };
 
   return (
     <div className="topbar">
       {/* LEFT */}
-
       <div className="topbar-left">
-        <p>Where code meets rhythm</p>
+        <p>
+          Where code meets
+          rhythm
+        </p>
       </div>
 
       {/* RIGHT */}
-
       <div className="topbar-right">
         {/* SEARCH */}
-
         <input
           type="text"
           placeholder="Search songs..."
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) =>
+            setSearch(
+              e.target.value
+            )
+          }
         />
 
         {/* PROFILE */}
-
-        <div className="profile-section" ref={dropdownRef}>
+        <div
+          className="profile-section"
+          ref={dropdownRef}
+        >
           <button
             className="profile-btn"
-            onClick={() => setShowDropdown(!showDropdown)}
+            onClick={() =>
+              setShowDropdown(
+                !showDropdown
+              )
+            }
           >
             <FaUserCircle />
           </button>
 
-          {showDropdown && isLoggedIn && (
-            <div className="profile-dropdown">
-              <button onClick={handleLogout}>Logout</button>
-            </div>
-          )}
+          {showDropdown &&
+            isLoggedIn && (
+              <div className="profile-dropdown">
+                <button
+                  onClick={
+                    handleLogout
+                  }
+                >
+                  Logout
+                </button>
+              </div>
+            )}
         </div>
       </div>
     </div>

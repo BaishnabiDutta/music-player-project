@@ -7,6 +7,8 @@ import {
   useNavigate,
 } from "react-router-dom";
 
+import { toast } from "react-toastify";
+
 import "./AdminPage.css";
 
 export default function AdminPage() {
@@ -45,8 +47,8 @@ export default function AdminPage() {
       isAdmin !==
       "true"
     ) {
-      alert(
-        "Access Denied"
+      toast.error(
+        "Access Denied ❌"
       );
 
       navigate("/");
@@ -57,26 +59,31 @@ export default function AdminPage() {
   }, [navigate]);
 
   // FETCH SONGS
-  const fetchSongs =
-    async () => {
-      try {
-        const res =
-          await fetch(
-            "http://localhost:5000/songs"
-          );
-
-        const data =
-          await res.json();
-
-        setSongs(data);
-      } catch (
-        error
-      ) {
-        console.log(
-          error
+const fetchSongs =
+  async () => {
+    try {
+      const res =
+        await fetch(
+          "http://localhost:5000/api/songs"
         );
-      }
-    };
+
+      const data =
+        await res.json();
+
+      setSongs(data);
+
+    } catch (
+      error
+    ) {
+      console.log(
+        error
+      );
+
+      toast.error(
+        "Failed to fetch songs ❌"
+      );
+    }
+  };
 
   // DELETE SONG
   const handleDelete =
@@ -94,8 +101,9 @@ export default function AdminPage() {
         const data =
           await res.json();
 
-        alert(
-          data.message
+        toast.success(
+          data.message ||
+            "Song deleted successfully 🗑️"
         );
 
         fetchSongs();
@@ -106,8 +114,8 @@ export default function AdminPage() {
           error
         );
 
-        alert(
-          "Delete Failed"
+        toast.error(
+          "Delete Failed ❌"
         );
       }
     };
@@ -167,8 +175,9 @@ export default function AdminPage() {
           const data =
             await res.json();
 
-          alert(
-            data.message
+          toast.success(
+            data.message ||
+              "Song updated successfully 🎵"
           );
 
           // REFRESH TABLE
@@ -237,8 +246,9 @@ export default function AdminPage() {
         const data =
           await res.json();
 
-        alert(
-          data.message
+        toast.success(
+          data.message ||
+            "Song added successfully 🎶"
         );
 
         // REFRESH TABLE
@@ -262,8 +272,8 @@ export default function AdminPage() {
           error
         );
 
-        alert(
-          "Upload Failed"
+        toast.error(
+          "Upload Failed ❌"
         );
       }
     };

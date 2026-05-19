@@ -5,10 +5,10 @@ export default function Sidebar({
   setActiveSection,
 }) {
   const isAdmin =
-    localStorage.getItem(
-      "isAdmin"
-    );
-
+  localStorage.getItem(
+    "isAdmin"
+  ) === "true";
+    const hasnoToken = localStorage.getItem("token") ? false : true;
   return (
     <div className="sidebar">
       {/* LOGO */}
@@ -67,8 +67,7 @@ export default function Sidebar({
         </button>
 
         {/* ADMIN ONLY */}
-        {isAdmin ===
-          "true" && (
+        {isAdmin && (
           <button
             onClick={() =>
               (window.location.href =
@@ -78,6 +77,19 @@ export default function Sidebar({
             Admin
           </button>
         )}
+
+
+        {hasnoToken && (
+          <button
+            onClick={() =>
+              (window.location.href =
+                "/login")
+            }
+          >
+            Login
+          </button>
+        )}
+
       </div>
     </div>
   );

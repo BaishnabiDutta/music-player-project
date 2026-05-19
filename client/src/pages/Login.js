@@ -28,11 +28,12 @@ function Login() {
       if (res.ok) {
         localStorage.setItem("token", data.token);
 
-        localStorage.setItem("email", email);
+        localStorage.setItem("email", data.user.email);
+        localStorage.setItem("isAdmin", String(data.user.isAdmin));
 
-        alert("Login Successful");
+        
 
-        navigate("/player");
+        navigate("/");
       } else {
         alert(data.message);
       }

@@ -1,38 +1,267 @@
 .admin-page {
-  display: flex;
-  gap: 30px;
-  padding: 40px;
   min-height: 100vh;
-  background: #121212;
+  padding: 18px;
+
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+
+  background:
+    radial-gradient(
+      circle at top left,
+      rgba(120, 0, 0, 0.2),
+      transparent 35%
+    ),
+    linear-gradient(
+      to bottom,
+      #180000,
+      #090000
+    );
+
   color: white;
 }
 
+/* BOTH PANELS */
 .admin-left,
 .admin-right {
-  flex: 1;
-  background: #1f1f1f;
-  padding: 25px;
-  border-radius: 15px;
+  background:
+    rgba(255, 255, 255, 0.035);
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.06);
+
+  border-radius: 26px;
+
+  padding: 18px 20px;
+
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+
+  box-shadow:
+    0 8px 28px
+    rgba(0, 0, 0, 0.25);
 }
 
+/* FIX THE UGLY MIDDLE GAP */
+.admin-left {
+  height: fit-content;
+  margin-right: 8px;
+}
+
+.admin-right {
+  margin-left: 8px;
+
+  max-height: calc(100vh - 36px);
+  overflow-y: auto;
+}
+
+/* TITLES */
+.admin-left h2,
+.admin-right h2 {
+  margin: 0 0 18px 0;
+
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* INPUTS */
 .admin-left input {
   width: 100%;
-  padding: 12px;
-  margin-bottom: 15px;
+  height: 46px;
+
+  padding: 0 16px;
+  margin-bottom: 10px;
+
+  border-radius: 14px;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.08);
+
+  background:
+    rgba(255, 255, 255, 0.04);
+
+  color: white;
+  font-size: 14px;
+
+  outline: none;
+  transition: 0.25s ease;
+
+  box-sizing: border-box;
 }
 
+.admin-left input::placeholder {
+  color:
+    rgba(255,255,255,0.45);
+}
+
+.admin-left input:focus {
+  border-color: #ff2d2d;
+
+  box-shadow:
+    0 0 0 4px
+    rgba(255, 0, 0, 0.12);
+}
+
+/* FILE INPUT */
+.admin-left input[type="file"] {
+  height: 46px;
+  padding: 10px 14px;
+  cursor: pointer;
+}
+
+/* BUTTON */
 .admin-left button {
   width: 100%;
-  padding: 12px;
+  height: 46px;
+
+  border: none;
+  border-radius: 14px;
+
+  margin-top: 4px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #ff0000,
+      #c00000
+    );
+
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+  transition: 0.2s ease;
 }
 
+.admin-left button:hover {
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 8px 20px
+    rgba(255,0,0,0.25);
+}
+
+/* TABLE */
 table {
-  width: 100%;
-  border-collapse: collapse;
+  width: calc(100% + 6px);
+
+  border-collapse: separate;
+  border-spacing: 0 10px;
+
+  margin-top: -2px;
+  margin-left: -6px; /* FIXES YOUR CIRCLED GAP */
 }
 
-th,
+/* HEADER */
+thead th {
+  text-align: left;
+
+  padding:
+    0 14px 8px;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  color:
+    rgba(255,255,255,0.5);
+}
+
+/* ROWS */
+tbody tr {
+  background:
+    rgba(255,255,255,0.05);
+
+  transition: 0.2s ease;
+}
+
+tbody tr:hover {
+  background:
+    rgba(255,255,255,0.08);
+}
+
+/* CELLS */
 td {
-  padding: 14px;
-  border-bottom: 1px solid #333;
+  padding: 16px 14px;
+  font-size: 14px;
+}
+
+/* ROUNDED EDGES */
+tbody tr td:first-child {
+  border-radius:
+    16px 0 0 16px;
+}
+
+tbody tr td:last-child {
+  border-radius:
+    0 16px 16px 0;
+}
+
+/* GENRE */
+td:nth-child(3) {
+  color: #ff9d9d;
+  font-weight: 600;
+}
+
+/* ACTION BUTTONS */
+td button {
+  border: none;
+  border-radius: 999px;
+
+  padding: 8px 16px;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+/* EDIT */
+td button:first-child {
+  background:
+    rgba(255,255,255,0.08);
+
+  color: white;
+  margin-right: 8px;
+}
+
+/* DELETE */
+td button:last-child {
+  background:
+    rgba(255,0,0,0.15);
+
+  color: #ff5b5b;
+}
+
+/* SCROLLBAR */
+.admin-right::-webkit-scrollbar {
+  width: 6px;
+}
+
+.admin-right::-webkit-scrollbar-thumb {
+  background:
+    rgba(255,255,255,0.12);
+
+  border-radius: 999px;
+}
+
+/* MOBILE */
+@media (max-width: 1000px) {
+  .admin-page {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-left,
+  .admin-right {
+    margin: 0;
+  }
+
+  table {
+    margin-left: 0;
+    width: 100%;
+  }
 }

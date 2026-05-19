@@ -16,6 +16,7 @@ const Song =
 const router =
   express.Router();
 
+
 // STORAGE CONFIG
 const storage =
   multer.diskStorage({
@@ -47,6 +48,7 @@ const storage =
       },
   });
 
+
 // MIME VALIDATION
 const fileFilter = (
   req,
@@ -77,11 +79,13 @@ const fileFilter = (
   }
 };
 
+
 const upload =
   multer({
     storage,
     fileFilter,
   });
+
 
 // TEST ROUTE
 router.get(
@@ -93,6 +97,37 @@ router.get(
     });
   }
 );
+
+
+// GET ALL SONGS
+router.get(
+  "/",
+  async (
+    req,
+    res
+  ) => {
+    try {
+      const songs =
+        await Song.find();
+
+      res.json(songs);
+
+    } catch (
+      error
+    ) {
+      console.log(
+        "FETCH ERROR:",
+        error
+      );
+
+      res.status(500).json({
+        message:
+          "Error fetching songs",
+      });
+    }
+  }
+);
+
 
 // ADD SONG
 router.post(
@@ -161,6 +196,7 @@ router.post(
   }
 );
 
+
 // UPDATE SONG
 router.put(
   "/:id",
@@ -169,11 +205,6 @@ router.put(
     res
   ) => {
     try {
-      console.log(
-        "REQ BODY:",
-        req.body
-      );
-
       const {
         title,
         artist,
@@ -225,6 +256,7 @@ router.put(
   }
 );
 
+
 // DELETE SONG
 router.delete(
   "/:id",
@@ -256,11 +288,6 @@ router.delete(
           song.url
         );
 
-      console.log(
-        "Deleting file:",
-        filePath
-      );
-
       // DELETE FILE
       if (
         fs.existsSync(
@@ -273,10 +300,6 @@ router.delete(
 
         console.log(
           "File deleted"
-        );
-      } else {
-        console.log(
-          "File not found"
         );
       }
 
@@ -305,6 +328,7 @@ router.delete(
     }
   }
 );
+
 
 module.exports =
   router;

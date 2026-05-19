@@ -1,18 +1,33 @@
-const userRoutes = require("./routes/userRoutes");
+const express =
+  require("express");
+
+const cors =
+  require("cors");
+
+const path =
+  require("path");
+
+const mongoose =
+  require("mongoose");
+
+const userRoutes =
+  require("./routes/userRoutes");
+
 const songRoutes =
-  require(
-    "./routes/songRoutes"
-  );
-const express = require("express");
-const cors = require("cors");
-const path = require("path");
-const mongoose = require("mongoose");
-const Song = require("./models/Song");
+  require("./routes/songRoutes");
+
 const app = express();
 
-app.use(cors());
-app.use(express.json());
 
+// MIDDLEWARE
+app.use(cors());
+
+app.use(
+  express.json()
+);
+
+
+// SERVE UPLOADED MP3 FILES
 app.use(
   "/uploads",
   express.static(
@@ -23,53 +38,58 @@ app.use(
   )
 );
 
-app.use("/api/users", userRoutes);
+
+// API ROUTES
+app.use(
+  "/api/users",
+  userRoutes
+);
 
 app.use(
   "/api/songs",
   songRoutes
 );
 
+
 // CONNECT MONGODB
-mongoose.connect(
-  "mongodb://taiprachi1_db_user:u7yodFXZJCKXTq9v@ac-v71oqvk-shard-00-00.wksowcp.mongodb.net:27017,ac-v71oqvk-shard-00-01.wksowcp.mongodb.net:27017,ac-v71oqvk-shard-00-02.wksowcp.mongodb.net:27017/musicDB?ssl=true&replicaSet=atlas-tdi57f-shard-0&authSource=admin&retryWrites=true&w=majority&tls=true",
-  {
-    serverSelectionTimeoutMS: 60000,
-    socketTimeoutMS: 60000
-  }
-)
+mongoose
+  .connect(
+    "mongodb://taiprachi1_db_user:u7yodFXZJCKXTq9v@ac-v71oqvk-shard-00-00.wksowcp.mongodb.net:27017,ac-v71oqvk-shard-00-01.wksowcp.mongodb.net:27017,ac-v71oqvk-shard-00-02.wksowcp.mongodb.net:27017/musicDB?ssl=true&replicaSet=atlas-tdi57f-shard-0&authSource=admin&retryWrites=true&w=majority&tls=true",
+    {
+      serverSelectionTimeoutMS:
+        60000,
 
-.then(() => console.log("MongoDB Connected"))
-.catch((err) => console.log("MongoDB Error:", err));
+      socketTimeoutMS:
+        60000,
+    }
+  )
+  .then(() =>
+    console.log(
+      "MongoDB Connected"
+    )
+  )
+  .catch((err) =>
+    console.log(
+      "MongoDB Error:",
+      err
+    )
+  );
 
 
-// Serve MP3 files
-app.use(
-  "/songs",
-  express.static(path.join(__dirname, "../client/public/songs"))
-);
+// HOME ROUTE
+app.get("/", (req, res) => {
+  res.send(
+    "Server is working!"
+  );
+});
+
 
 const PORT = 5000;
 
-// Home Route
-app.get("/", (req, res) => {
-  res.send("Server is working!");
-});
 
-// Songs Route
-app.get("/songs", async (req, res) => {
-  try {
-    const songs = await Song.find();
-    res.json(songs);
-  } catch (error) {
-    res.status(500).json({
-      message: "Error fetching songs",
-      error,
-    });
-  }
-});
-
-// Start Server
+// START SERVER
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(
+    `Server running on port ${PORT}`
+  );
 });
